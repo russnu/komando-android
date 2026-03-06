@@ -1,0 +1,47 @@
+package org.russel.komandoandroid.ui.component
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import org.russel.komandoandroid.data.model.User
+
+@Composable
+fun UserSelector(
+    users: List<User>,
+    selectedUsers: Set<User>,
+    onUserToggle: (User) -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier.fillMaxWidth()
+    ){
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 250.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(users) { user ->
+                UserCheckboxItem(
+                    user = user,
+                    isSelected = selectedUsers.contains(user),
+                    onToggle = { onUserToggle(user) }
+                )
+            }
+        }
+    }
+
+}
