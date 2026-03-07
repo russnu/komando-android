@@ -28,49 +28,39 @@ fun ProfileScreen(
     val fullName = viewModel.name
     val username = viewModel.username
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Profile") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
-                )
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // User full name
+        Text(
+            text = fullName,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Username
+        Text(
+            text = "@$username",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Gray,
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+
+        // Logout Button
+        Button(
+            onClick = {
+                viewModel.logout()
+                onLogout()
+            },
+            modifier = Modifier.fillMaxWidth(0.5f)
         ) {
-            // User full name
-            Text(
-                text = fullName,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Username
-            Text(
-                text = "@$username",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.Gray,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            // Logout Button
-            Button(
-                onClick = {
-                    viewModel.logout()
-                    onLogout()
-                },
-                modifier = Modifier.fillMaxWidth(0.5f)
-            ) {
-                Text(text = "Logout")
-            }
+            Text(text = "Logout")
         }
     }
+
+
 }

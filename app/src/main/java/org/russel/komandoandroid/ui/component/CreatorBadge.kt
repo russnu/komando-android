@@ -6,27 +6,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.russel.komandoandroid.data.model.enums.TaskStatus
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import org.russel.komandoandroid.R
 
 @Composable
 fun CreatorBadge(
-    text: String,
+    text: String? = "Unknown",
     isCurrentUser: Boolean,
     modifier: Modifier = Modifier,
-    textStyle: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.labelMedium,
+    textStyle: TextStyle = MaterialTheme.typography.labelMedium,
 
     ) {
 
@@ -58,7 +56,7 @@ fun CreatorBadge(
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = text,
+                text = text ?: "Unknown",
                 style = textStyle,
                 fontWeight = FontWeight.SemiBold,
                 color = contentColor

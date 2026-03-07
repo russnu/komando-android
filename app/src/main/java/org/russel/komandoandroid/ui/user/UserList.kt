@@ -17,7 +17,10 @@ fun UserList(users: List<User>, modifier: Modifier ) {
             modifier = modifier.padding(16.dp)
         )
     } else {
-        Column (modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column (
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
             users.forEach { user ->
                 UserItem(user = user)
             }

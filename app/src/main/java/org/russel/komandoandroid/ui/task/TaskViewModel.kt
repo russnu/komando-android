@@ -89,7 +89,7 @@ class TaskViewModel(private val repository: TaskRepository,
                 val newTask = Task(
                     title = title,
                     description = description,
-                    group = GroupRef(groupId)
+                    group = GroupRef(groupId),
                 )
 
                 val createdTask = repository.addTask(newTask)

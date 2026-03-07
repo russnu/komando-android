@@ -9,5 +9,6 @@ data class Task (
     val description: String,
     val status: TaskStatus = TaskStatus.PENDING,
     val assignedUsers: List<User> = emptyList(),
-    val group: GroupRef
+    val group: GroupRef,
+    val createdBy: User? = null
     )

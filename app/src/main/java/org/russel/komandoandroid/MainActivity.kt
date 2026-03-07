@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -17,7 +18,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +42,7 @@ import org.russel.komandoandroid.data.repository.GroupRepository
 import org.russel.komandoandroid.data.repository.TaskRepository
 import org.russel.komandoandroid.data.repository.UserRepository
 import org.russel.komandoandroid.fcmservice.FcmTopicManager
+import org.russel.komandoandroid.ui.component.AppTopBar
 import org.russel.komandoandroid.ui.component.NavItem
 import org.russel.komandoandroid.ui.factory.GroupViewModelFactory
 import org.russel.komandoandroid.ui.factory.LoginViewModelFactory
@@ -56,6 +63,7 @@ import org.russel.komandoandroid.ui.theme.KomandoandroidTheme
 
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= 33) {
@@ -79,12 +87,6 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             KomandoandroidTheme(darkTheme = false, dynamicColor = false) {
-
-//                val sessionManager = SessionManager(application)
-//                // ------------------------------------------------------------ //
-//                if (sessionManager.isLoggedIn()) {
-//                    FcmTopicManager.restoreSubscriptions(sessionManager)
-//                }
                 // ------------------------------------------------------------ //
                 val authApi  = RetrofitClient.authService(applicationContext)
                 val deviceApi = RetrofitClient.deviceService(applicationContext)
@@ -127,15 +129,38 @@ class MainActivity : ComponentActivity() {
                 )
                 val startDestination = if (sessionManager.isLoggedIn()) NavItem.Tasks.route else "login"
 
-
+                val topBarTitle = remember { mutableStateOf("") }
+                val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+
+                    modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+                    topBar = {
+                        val canGoBack = navController.previousBackStackEntry != null
+                        AppTopBar(
+                            title = topBarTitle.value,
+                            showBackButton = canGoBack,
+                            scrollBehavior = scrollBehavior,
+                            onBackClick = { navController.popBackStack() }
+                        )
+                    },
                     bottomBar = {
                         NavigationBar(
                             containerColor = MaterialTheme.colorScheme.primary
                         ) {
                             val currentRoute =
                                 navController.currentBackStackEntryAsState().value?.destination?.route
+
+                            /* TODO: implement hiding bottom bars on login page :
+                            *    bottomBar = {
+                            *       if (showBottomBar) {
+                            *           NavigationBar { ... }
+                            *       }
+                            *   } */
+                            val showBottomBar = currentRoute in listOf(
+                                NavItem.Tasks.route,
+                                NavItem.Groups.route,
+                                NavItem.Profile.route
+                            )
 
                             items.forEach { item ->
                                 NavigationBarItem(
@@ -161,8 +186,7 @@ class MainActivity : ComponentActivity() {
                     }) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = startDestination,
-                        modifier = Modifier.padding(innerPadding)
+                        startDestination = startDestination
                     ){
                         composable("login") {
                             LoginScreen(
@@ -181,8 +205,12 @@ class MainActivity : ComponentActivity() {
                         // ======================================================================== //
 
                         composable(NavItem.Tasks.route) {
+                            LaunchedEffect(Unit) {
+                                topBarTitle.value = "My Tasks"
+                            }
                             TaskScreen(
                                 viewModel = taskViewModel,
+                                modifier = Modifier.padding(innerPadding),
                                 onTaskClick = { taskId ->
                                     navController.navigate("taskDetail/$taskId")
                                 }
@@ -195,12 +223,17 @@ class MainActivity : ComponentActivity() {
                             route = "taskDetail/{taskId}",
                             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
                         ) { backStackEntry ->
+
+                            LaunchedEffect(Unit) {
+                                topBarTitle.value = "Task Details"
+                            }
+
                             val taskId = backStackEntry.arguments?.getInt("taskId") ?: 0
 
                             TaskDetailsScreen(
                                 taskId = taskId,
-                                viewModel = taskViewModel,
-                                onBackClick = { navController.popBackStack() }
+                                modifier = Modifier.padding(innerPadding),
+                                viewModel = taskViewModel
                             )
                         }
 
@@ -224,8 +257,14 @@ class MainActivity : ComponentActivity() {
                         // ======================================================================== //
 
                         composable(NavItem.Profile.route) {
+
+                            LaunchedEffect(Unit) {
+                                topBarTitle.value = "Profile"
+                            }
+
                             ProfileScreen(
                                 viewModel = profileViewModel,
+                                modifier = Modifier.padding(innerPadding),
                                 onLogout = {
                                     navController.navigate("login") {
                                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
@@ -237,8 +276,14 @@ class MainActivity : ComponentActivity() {
                         // ======================================================================== //
 
                         composable(NavItem.Groups.route) {
+
+                            LaunchedEffect(Unit) {
+                                topBarTitle.value = "My Groups"
+                            }
+
                             GroupScreen(
                                 viewModel = groupViewModel,
+                                modifier = Modifier.padding(innerPadding),
                                 onGroupClick = { groupId ->
                                     navController.navigate("groupDetail/$groupId")
                                 },
@@ -253,13 +298,18 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = "groupDetail/{groupId}",
                             arguments = listOf(navArgument("groupId") { type = NavType.IntType })
-                        ) { backStackEntry ->
+                        ) {
+                            backStackEntry ->
                             val groupId = backStackEntry.arguments?.getInt("groupId") ?: 0
+
+                            LaunchedEffect(backStackEntry) {
+                                topBarTitle.value = "Group Details"
+                            }
 
                             GroupDetailsScreen(
                                 groupId = groupId,
                                 viewModel = groupViewModel,
-                                onBackClick = { navController.popBackStack() },
+                                modifier = Modifier.padding(innerPadding),
                                 onTaskClick = { taskId ->
                                     navController.navigate("taskDetail/$taskId")
                                 },
