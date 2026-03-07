@@ -1,9 +1,10 @@
 package org.russel.komandoandroid.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -26,15 +27,13 @@ fun UserSelector(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxSize()
     ){
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 250.dp),
+        Column(
+            modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(users) { user ->
+            users.forEach { user ->
                 UserCheckboxItem(
                     user = user,
                     isSelected = selectedUsers.contains(user),

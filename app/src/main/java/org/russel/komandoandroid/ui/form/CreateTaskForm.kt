@@ -31,18 +31,9 @@ fun CreateTaskForm(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-
-        Text(
-            text = "Task Details",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
         AppTextField(
             value = title,
             onValueChange = onTitleChange,

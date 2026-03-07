@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import org.russel.komandoandroid.data.model.Task
 import org.russel.komandoandroid.data.model.enums.TaskStatus
+import org.russel.komandoandroid.data.model.request.CreateTaskRequest
 import org.russel.komandoandroid.data.model.request.UpdateStatusRequest
 import org.russel.komandoandroid.data.remote.RetrofitClient
 import org.russel.komandoandroid.data.remote.TaskApi
@@ -22,8 +23,8 @@ class TaskRepository(private val api: TaskApi) {
         return api.getTaskById(id)
     }
     //--------------------------------------------------------------------------------------//
-    suspend fun addTask(task: Task): Task {
-        return api.createTask(task)
+    suspend fun addTask(request: CreateTaskRequest): Task {
+        return api.createTask(request)
     }
     //--------------------------------------------------------------------------------------//
     suspend fun updateTask(task: Task): Task {

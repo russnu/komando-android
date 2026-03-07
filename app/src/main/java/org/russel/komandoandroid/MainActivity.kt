@@ -20,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -245,31 +247,18 @@ class MainActivity : ComponentActivity() {
                                 navArgument("groupId") { type = NavType.IntType }
                             )
                         ) { backStackEntry ->
-                            val groupId = backStackEntry.arguments?.getInt("groupId") ?: 0
+                            val groupId = backStackEntry.arguments!!.getInt("groupId")
+
+                            LaunchedEffect(groupId) {
+                                topBarTitle.value = "Create Task"
+                            }
 
                         CreateTaskScreen(
                             viewModel = taskViewModel,
+                            groupViewModel = groupViewModel,
                             groupId = groupId,
+                            modifier = Modifier.padding(innerPadding),
                             onBackClick = { navController.popBackStack() }
-                            )
-                        }
-
-                        // ======================================================================== //
-
-                        composable(NavItem.Profile.route) {
-
-                            LaunchedEffect(Unit) {
-                                topBarTitle.value = "Profile"
-                            }
-
-                            ProfileScreen(
-                                viewModel = profileViewModel,
-                                modifier = Modifier.padding(innerPadding),
-                                onLogout = {
-                                    navController.navigate("login") {
-                                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                                    }
-                                }
                             )
                         }
 
@@ -313,11 +302,28 @@ class MainActivity : ComponentActivity() {
                                 onTaskClick = { taskId ->
                                     navController.navigate("taskDetail/$taskId")
                                 },
-                                onAddTaskClick = { navController.navigate("createTask")}
+                                onAddTaskClick = { navController.navigate("createTask/$groupId")}
                             )
                         }
 
+                        // ======================================================================== //
 
+                        composable(NavItem.Profile.route) {
+
+                            LaunchedEffect(Unit) {
+                                topBarTitle.value = "Profile"
+                            }
+
+                            ProfileScreen(
+                                viewModel = profileViewModel,
+                                modifier = Modifier.padding(innerPadding),
+                                onLogout = {
+                                    navController.navigate("login") {
+                                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
 
                         // ======================================================================== //
                     }

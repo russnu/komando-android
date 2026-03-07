@@ -17,14 +17,14 @@ class GroupViewModel(private val repository: GroupRepository,
     private val _groups = MutableStateFlow<List<Group>>(emptyList())
     private val _selectedGroup = MutableStateFlow<Group?>(null)
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
-    private val _users = MutableStateFlow<List<User>>(emptyList())
+    private val _members = MutableStateFlow<List<User>>(emptyList())
     private val _currentUserId = MutableStateFlow(sessionManager.getUserId())
 
     //--------------------------------------------------------------------------------------//
     val groups: StateFlow<List<Group>> get() = _groups
     val selectedGroup: StateFlow<Group?> = _selectedGroup
     val tasks: StateFlow<List<Task>> get() = _tasks
-    val users: StateFlow<List<User>> get() = _users
+    val members: StateFlow<List<User>> get() = _members
     val currentUserId: StateFlow<Int?> = _currentUserId
     //--------------------------------------------------------------------------------------//
 
@@ -110,7 +110,7 @@ class GroupViewModel(private val repository: GroupRepository,
                 val group = repository.getGroupById(id)
                 _selectedGroup.value = group
                 _tasks.value = group.tasks
-                _users.value = group.users
+                _members.value = group.users
             } catch (e: Exception) {
                 Log.e("GroupVM", "Failed to fetch group by id", e)
             }

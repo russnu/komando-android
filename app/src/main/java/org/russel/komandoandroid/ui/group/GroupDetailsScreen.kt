@@ -1,6 +1,7 @@
 package org.russel.komandoandroid.ui.group
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.russel.komandoandroid.ui.task.TaskList
 import org.russel.komandoandroid.R
+import org.russel.komandoandroid.ui.component.AppFloatingActionButton
 import org.russel.komandoandroid.ui.user.UserList
 
 @Composable
@@ -41,116 +43,131 @@ fun GroupDetailsScreen(
 ) {
     val group by viewModel.selectedGroup.collectAsState()
     val tasks by viewModel.tasks.collectAsState()
-    val users by viewModel.users.collectAsState()
+    val members by viewModel.members.collectAsState()
 
     LaunchedEffect(groupId) {
         viewModel.fetchGroupById(groupId)
     }
 
     group?.let {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            item {
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start) {
+
+        Box(modifier = modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                item {
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_group),
+                            contentDescription = "Group Icon",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = it.name,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                        )
+                    }
+                }
+
+                item {
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_tasks),
+                                    contentDescription = "Task Icon",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Tasks",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            TaskList(
+                                tasks = tasks,
+                                modifier = Modifier.fillMaxWidth(),
+                                onTaskClick = onTaskClick
+                            )
+                        }
+
+
+                    }
+                }
+
+                item {
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_users),
+                                    contentDescription = "Users Icon",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Members",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            UserList(
+                                users = members,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+
+                }
+            }
+
+            AppFloatingActionButton(
+                onClick = onAddTaskClick,
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                content = {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_group),
-                        contentDescription = "Group Icon",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = it.name,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-
+                        painter = painterResource(R.drawable.ic_task_plus),
+                        contentDescription = "Add Group"
                     )
                 }
-            }
-
-            item {
-                Card(
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_tasks),
-                                contentDescription = "Task Icon",
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Tasks",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        TaskList(
-                            tasks = tasks,
-                            modifier = Modifier.fillMaxWidth(),
-                            onTaskClick = onTaskClick
-                        )
-                    }
-
-
-                }
-            }
-
-            item {
-                Card(
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_users),
-                                contentDescription = "Users Icon",
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Members",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        UserList(
-                            users = users,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-
-            }
+            )
         }
+
     }
 
 

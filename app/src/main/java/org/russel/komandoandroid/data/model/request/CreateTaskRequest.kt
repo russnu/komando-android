@@ -6,5 +6,6 @@ data class CreateTaskRequest(
     val title: String,
     val description: String,
     val status: TaskStatus = TaskStatus.PENDING,
-    val group: GroupRef
+    val group: GroupRef,
+    val assignedUsers: List<UserRef> = emptyList()
 )

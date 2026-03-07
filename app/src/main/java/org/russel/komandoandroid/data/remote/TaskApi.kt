@@ -1,6 +1,7 @@
 package org.russel.komandoandroid.data.remote;
 
 import org.russel.komandoandroid.data.model.Task
+import org.russel.komandoandroid.data.model.request.CreateTaskRequest
 import org.russel.komandoandroid.data.model.request.UpdateStatusRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE;
@@ -21,7 +22,7 @@ interface TaskApi {
     suspend fun getTaskById(@Path("id") id: Int): Task
 
     @POST("/api/task")
-    suspend fun createTask(@Body task: Task): Task
+    suspend fun createTask(@Body request: CreateTaskRequest): Task
 
     @PUT("/api/task/{id}")
     suspend fun updateTask(@Path("id") id: Int?, @Body task: Task): Task
