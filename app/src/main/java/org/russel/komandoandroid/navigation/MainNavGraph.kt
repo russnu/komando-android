@@ -16,6 +16,7 @@ import org.russel.komandoandroid.data.model.NavItem
 import org.russel.komandoandroid.ui.group.CreateGroupScreen
 import org.russel.komandoandroid.ui.group.GroupDetailsScreen
 import org.russel.komandoandroid.ui.group.GroupScreen
+import org.russel.komandoandroid.ui.group.UpdateMembersScreen
 import org.russel.komandoandroid.ui.viewmodel.GroupViewModel
 import org.russel.komandoandroid.ui.profile.ProfileScreen
 import org.russel.komandoandroid.ui.task.CreateTaskScreen
@@ -169,10 +170,11 @@ fun NavGraphBuilder.mainNavGraph(
                 groupId = groupId,
                 viewModel = groupViewModel,
                 modifier = Modifier.padding(innerPadding),
-                onTaskClick = { taskId ->
-                    navController.navigate("tasks/$taskId/details")
+                onTaskClick = { taskId -> navController.navigate("tasks/$taskId/details")
                 },
-                onAddTaskClick = { navController.navigate("tasks/create/group/$groupId")}
+                onAddTaskClick = { navController.navigate("tasks/create/group/$groupId")},
+                onEditMembersClick = { navController.navigate("groups/$groupId/members/edit") },
+                onBackClick = { navController.popBackStack() }
             )
         }
         //-------------------------------------------------------------------------//
@@ -188,6 +190,27 @@ fun NavGraphBuilder.mainNavGraph(
                 userViewModel = userViewModel,
                 modifier = Modifier.padding(innerPadding),
                 onBackClick = { navController.popBackStack() },
+            )
+        }
+        //-------------------------------------------------------------------------//
+        composable(
+            route = "groups/{groupId}/members/edit",
+            arguments = listOf(
+                navArgument("groupId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments!!.getInt("groupId")
+
+            LaunchedEffect(groupId) {
+                topBarTitle.value = "Edit Group Members"
+            }
+
+            UpdateMembersScreen(
+                groupId = groupId,
+                viewModel = groupViewModel,
+                userViewModel = userViewModel,
+                modifier = Modifier.padding(innerPadding),
+                onCancelClick = { navController.popBackStack() },
             )
         }
         //-------------------------------------------------------------------------//

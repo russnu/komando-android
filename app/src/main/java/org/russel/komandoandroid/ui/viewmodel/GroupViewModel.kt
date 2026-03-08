@@ -11,6 +11,7 @@ import org.russel.komandoandroid.data.model.Group
 import org.russel.komandoandroid.data.model.Task
 import org.russel.komandoandroid.data.model.User
 import org.russel.komandoandroid.data.model.request.CreateGroupRequest
+import org.russel.komandoandroid.data.model.request.UpdateGroupRequest
 import org.russel.komandoandroid.data.model.request.UserRef
 import org.russel.komandoandroid.data.repository.GroupRepository
 
@@ -21,8 +22,8 @@ class GroupViewModel(private val repository: GroupRepository,
     private val _selectedGroup = MutableStateFlow<Group?>(null)
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
     private val _members = MutableStateFlow<List<User>>(emptyList())
-//    private val _currentUserId = MutableStateFlow(sessionManager.getUserId())
     private val _addedMembers = MutableStateFlow<Set<User>>(emptySet())
+    private val _originalMembers = MutableStateFlow<Set<User>>(emptySet())
     //--------------------------------------------------------------------------------------//
     val groups: StateFlow<List<Group>> get() = _groups
     val selectedGroup: StateFlow<Group?> = _selectedGroup
@@ -44,24 +45,6 @@ class GroupViewModel(private val repository: GroupRepository,
     }
 
     //--------------------------------------------------------------------------------------//
-
-//    fun fetchGroupsByUser() {
-//        if (!sessionManager.isLoggedIn()) return
-//        val userId = sessionManager.getUserId() ?: return
-//        viewModelScope.launch {
-//            try {
-//                val response = repository.getGroupByUser(userId)
-//                _groups.value = response
-//
-//                // Save the group IDs in session for topic subscriptions
-//                val groupIds = response.mapNotNull { it.id }  // Assuming Group has an 'id' property
-//                sessionManager.saveUserGroups(groupIds)
-//
-//            } catch (e: Exception) {
-//                Log.e("GroupVM", "Failed to fetch groups", e)
-//            }
-//        }
-//    }
 
     fun fetchGroupsByUser() {
         if (!sessionManager.isLoggedIn()) return
@@ -88,24 +71,6 @@ class GroupViewModel(private val repository: GroupRepository,
         return _groups.value.mapNotNull { it.id }
     }
 
-//    suspend fun fetchGroupIdsByUser(): List<Int> {
-//        if (!sessionManager.isLoggedIn()) return emptyList()
-//        val userId = sessionManager.getUserId() ?: return emptyList()
-//
-//        return try {
-//            val response = repository.getGroupsByUser(userId)
-//            _groups.value = response
-//
-//            val groupIds = response.mapNotNull { it.id }
-//            sessionManager.saveUserGroups(groupIds)
-//
-//            groupIds
-//        } catch (e: Exception) {
-//            Log.e("GroupVM", "Failed to fetch groups", e)
-//            emptyList()
-//        }
-//    }
-
     //--------------------------------------------------------------------------------------//
 
     fun fetchGroupById(id: Int) {
@@ -115,6 +80,9 @@ class GroupViewModel(private val repository: GroupRepository,
                 _selectedGroup.value = group
                 _tasks.value = group.tasks
                 _members.value = group.users
+
+                _originalMembers.value = group.users.toSet()
+                _addedMembers.value = group.users.toSet()
             } catch (e: Exception) {
                 Log.e("GroupVM", "Failed to fetch group by id", e)
             }
@@ -140,43 +108,65 @@ class GroupViewModel(private val repository: GroupRepository,
         }
     }
 //    //--------------------------------------------------------------------------------------//
-//    fun updateGroup(group: Group) {
-//        viewModelScope.launch {
-//            try {
-//                val updatedGroup = repository.updateGroup(group)
-//                _groups.value = _groups.value.map { if (it.id == updatedGroup.id) updatedGroup else it }
-//            } catch (e: Exception) {
-//                Log.e("GroupVM", "Failed to update group", e)
-//            }
-//        }
-//    }
+    fun updateGroup(groupId: Int, name: String) {
+        viewModelScope.launch {
+            try {
+                val request = UpdateGroupRequest(name)
+                val updatedGroup = repository.updateGroup(groupId, request)
+
+                _selectedGroup.value = updatedGroup
+
+                _groups.value = _groups.value.map {
+                    if (it.id == updatedGroup.id) updatedGroup else it
+                }
+            } catch (e: Exception) {
+                Log.e("GroupVM", "Failed to update group", e)
+            }
+        }
+    }
+    //--------------------------------------------------------------------------------------//
+    fun updateGroupMembers() {
+        val groupId = _selectedGroup.value?.id ?: return
+
+        viewModelScope.launch {
+            try {
+
+                val originalIds = _originalMembers.value.mapNotNull { it.id }.toSet()
+                val currentIds = _addedMembers.value.mapNotNull { it.id }.toSet()
+
+                val addedIds = currentIds - originalIds
+                val removedIds = originalIds - currentIds
+
+                if (addedIds.isNotEmpty()) {
+                    repository.addMembers(groupId, addedIds.toList())
+                }
+
+                if (removedIds.isNotEmpty()) {
+                    repository.removeMembers(groupId, removedIds.toList())
+                }
+
+                _originalMembers.value = _addedMembers.value
+
+            } catch (e: Exception) {
+                Log.e("TaskVM", "Failed to update group members", e)
+            }
+        }
+    }
+
 //    //--------------------------------------------------------------------------------------//
-//    fun updateGroupStatus(groupId: Int) {
-//        viewModelScope.launch {
-//            try {
-//                repository.updateGroupStatus(groupId)
-//                _groups.value = _groups.value.map {
-//                    if (it.id == groupId) it.copy(isDone = !it.isDone) else it
-//                }
-//            } catch (e: Exception) {
-//                Log.e("GroupVM", "Failed to update group status", e)
-//            }
-//        }
-//    }
-//    //--------------------------------------------------------------------------------------//
-//    fun deleteGroup(groupId: Int) {
-//        viewModelScope.launch {
-//            try {
-//                repository.deleteGroup(groupId)
-//                _groups.value = _groups.value.filter { it.id != groupId }
-//            } catch (e: Exception) {
-//                Log.e("GroupVM", "Failed to delete group", e)
-//            }
-//        }
-//    }
+    fun deleteGroup(groupId: Int) {
+        viewModelScope.launch {
+            try {
+                repository.deleteGroup(groupId)
+                _groups.value = _groups.value.filter { it.id != groupId }
+            } catch (e: Exception) {
+                Log.e("GroupVM", "Failed to delete group", e)
+            }
+        }
+    }
 
     //--------------------------------------------------------------------------------------//
-    fun toggleAddedUsers(user: User) {
+    fun toggleAddedMember(user: User) {
         _addedMembers.value = if (_addedMembers.value.contains(user)) {
             _addedMembers.value - user
         } else {

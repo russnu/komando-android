@@ -39,7 +39,7 @@ fun CreateGroupScreen(
                 users = allUsers,
                 selectedUsers = addedMembers,
                 onUserToggle = { user ->
-                    viewModel.toggleAddedUsers(user)
+                    viewModel.toggleAddedMember(user)
                 },
                 onCreateClick = {
                     viewModel.addGroup(name = name)
