@@ -12,15 +12,19 @@ fun AppTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    singleLine: Boolean = true,
+    minLines: Int = 1
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, style = MaterialTheme.typography.labelLarge.copy(
+        label = {
+            Text(label, style = MaterialTheme.typography.labelLarge.copy(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )) },
-        singleLine = true,
+        singleLine = singleLine,
+        minLines = minLines,
         modifier = modifier.fillMaxWidth()
     )
 }

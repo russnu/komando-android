@@ -11,22 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.russel.komandoandroid.data.model.User
 import org.russel.komandoandroid.ui.component.AppButton
 import org.russel.komandoandroid.ui.component.AppOutlinedButton
 import org.russel.komandoandroid.ui.component.AppTextField
-import org.russel.komandoandroid.ui.component.UserSelector
 
 @Composable
-fun CreateTaskForm(
+fun UpdateTaskForm(
     title: String,
     onTitleChange: (String) -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
-    users: List<User>,
-    selectedUsers: Set<User>,
-    onUserToggle: (User) -> Unit,
-    onCreateClick: () -> Unit,
+    onUpdateClick: () -> Unit,
     onCancelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -48,23 +43,11 @@ fun CreateTaskForm(
             minLines = 4
         )
 
-        Text(
-            text = "Assign Users",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        UserSelector(
-            users = users,
-            selectedUsers = selectedUsers,
-            onUserToggle = onUserToggle
-        )
-
         Spacer(modifier = Modifier.weight(1f))
 
         AppButton(
-            text = "Create Task",
-            onClick = onCreateClick,
+            text = "Save",
+            onClick = onUpdateClick,
             modifier = modifier,
             enabled = title.isNotBlank()
         )

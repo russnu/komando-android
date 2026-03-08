@@ -6,6 +6,7 @@ import org.russel.komandoandroid.data.model.Task
 import org.russel.komandoandroid.data.model.enums.TaskStatus
 import org.russel.komandoandroid.data.model.request.CreateTaskRequest
 import org.russel.komandoandroid.data.model.request.UpdateStatusRequest
+import org.russel.komandoandroid.data.model.request.UpdateTaskRequest
 import org.russel.komandoandroid.data.remote.RetrofitClient
 import org.russel.komandoandroid.data.remote.TaskApi
 
@@ -27,8 +28,8 @@ class TaskRepository(private val api: TaskApi) {
         return api.createTask(request)
     }
     //--------------------------------------------------------------------------------------//
-    suspend fun updateTask(task: Task): Task {
-        return api.updateTask(task.id, task)
+    suspend fun updateTask(request: UpdateTaskRequest, taskId: Int): Task {
+        return api.updateTask(taskId, request)
     }
     //--------------------------------------------------------------------------------------//
     suspend fun deleteTask(taskId: Int) {
@@ -39,4 +40,13 @@ class TaskRepository(private val api: TaskApi) {
         val request = UpdateStatusRequest(status)
         api.updateTaskStatus(taskId, request)
     }
+    //--------------------------------------------------------------------------------------//
+    suspend fun assignUsers(taskId: Int, userIds: List<Int>) {
+        api.assignUsers(taskId, userIds)
+    }
+    //--------------------------------------------------------------------------------------//
+    suspend fun removeUsers(taskId: Int, userIds: List<Int>) {
+        api.removeUsers(taskId, userIds)
+    }
+
 }

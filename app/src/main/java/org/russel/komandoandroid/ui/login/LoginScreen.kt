@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import org.russel.komandoandroid.ui.component.AppPasswordField
-import org.russel.komandoandroid.ui.component.AppPrimaryButton
+import org.russel.komandoandroid.ui.component.AppButton
 import org.russel.komandoandroid.ui.component.AppTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +71,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            AppPrimaryButton(
+            AppButton(
                 text = if (uiState.isLoading) "Logging in..." else "Login",
                 onClick = {
                     viewModel.login(username, password)

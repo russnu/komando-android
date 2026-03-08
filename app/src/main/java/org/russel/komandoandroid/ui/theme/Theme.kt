@@ -84,6 +84,10 @@ val AppTypography = Typography(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.Normal
     ),
+    labelLarge = Typography().labelMedium.copy(
+        fontFamily = PoppinsFontFamily,
+        fontWeight = FontWeight.Bold
+    ),
     labelMedium = Typography().labelMedium.copy(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.Medium

@@ -61,6 +61,8 @@ import org.russel.komandoandroid.ui.task.CreateTaskScreen
 import org.russel.komandoandroid.ui.task.TaskDetailsScreen
 import org.russel.komandoandroid.ui.task.TaskScreen
 import org.russel.komandoandroid.ui.task.TaskViewModel
+import org.russel.komandoandroid.ui.task.UpdateAssignedUsersScreen
+import org.russel.komandoandroid.ui.task.UpdateTaskScreen
 import org.russel.komandoandroid.ui.theme.KomandoandroidTheme
 
 
@@ -226,16 +228,19 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("taskId") { type = NavType.IntType })
                         ) { backStackEntry ->
 
-                            LaunchedEffect(Unit) {
+                            val taskId = backStackEntry.arguments?.getInt("taskId") ?: 0
+
+                            LaunchedEffect(taskId) {
                                 topBarTitle.value = "Task Details"
                             }
-
-                            val taskId = backStackEntry.arguments?.getInt("taskId") ?: 0
 
                             TaskDetailsScreen(
                                 taskId = taskId,
                                 modifier = Modifier.padding(innerPadding),
-                                viewModel = taskViewModel
+                                viewModel = taskViewModel,
+                                onEditTaskClick = { navController.navigate("editTask/$taskId")},
+                                onAssignUsersClick = { navController.navigate("editAssignedUsers/$taskId")},
+                                onBackClick = { navController.popBackStack() },
                             )
                         }
 
@@ -258,7 +263,53 @@ class MainActivity : ComponentActivity() {
                             groupViewModel = groupViewModel,
                             groupId = groupId,
                             modifier = Modifier.padding(innerPadding),
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { navController.popBackStack() },
+                            )
+                        }
+
+                        // ======================================================================== //
+
+                        composable(
+                            route = "editTask/{taskId}",
+                            arguments = listOf(
+                                navArgument("taskId") { type = NavType.IntType }
+                            )
+                        ) { backStackEntry ->
+                            val taskId = backStackEntry.arguments!!.getInt("taskId")
+
+                            LaunchedEffect(taskId) {
+                                topBarTitle.value = "Edit Task Details"
+                                taskViewModel.selectTaskById(taskId)
+                            }
+
+                            UpdateTaskScreen(
+                                taskId = taskId,
+                                viewModel = taskViewModel,
+                                modifier = Modifier.padding(innerPadding),
+                                onBackClick = { navController.popBackStack() },
+                            )
+                        }
+
+                        // ======================================================================== //
+
+                        composable(
+                            route = "editAssignedUsers/{taskId}",
+                            arguments = listOf(
+                                navArgument("taskId") { type = NavType.IntType }
+                            )
+                        ) { backStackEntry ->
+                            val taskId = backStackEntry.arguments!!.getInt("taskId")
+
+                            LaunchedEffect(taskId) {
+                                topBarTitle.value = "Edit Assigned Users"
+                            }
+
+                            UpdateAssignedUsersScreen(
+                                taskId = taskId,
+                                viewModel = taskViewModel,
+                                groupViewModel = groupViewModel,
+                                modifier = Modifier.padding(innerPadding),
+                                onCancelClick = { navController.popBackStack() },
                             )
                         }
 
@@ -291,7 +342,7 @@ class MainActivity : ComponentActivity() {
                             backStackEntry ->
                             val groupId = backStackEntry.arguments?.getInt("groupId") ?: 0
 
-                            LaunchedEffect(backStackEntry) {
+                            LaunchedEffect(groupId) {
                                 topBarTitle.value = "Group Details"
                             }
 
