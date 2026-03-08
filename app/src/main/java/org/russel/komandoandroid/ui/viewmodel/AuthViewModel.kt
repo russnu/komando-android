@@ -92,8 +92,11 @@ class AuthViewModel(
     }
     //=========================================================================//
     fun logout() {
-        sessionManager.clearSession()
-        refreshAuthState()
+        viewModelScope.launch {
+            unregisterDevice()
+            sessionManager.clearSession()
+            refreshAuthState()
+        }
     }
     //=========================================================================//
     fun loginSuccess() {
@@ -110,6 +113,15 @@ class AuthViewModel(
             deviceRepository.registerToken(token)
         } catch (e: Exception) {
             Log.e("FCM", "Failed to register token after login: ${e.message}")
+        }
+    }
+
+    private suspend fun unregisterDevice() {
+        try {
+            val token = FirebaseMessaging.getInstance().token.await()
+            deviceRepository.unregisterToken(token)
+        } catch (e: Exception) {
+            Log.e("FCM", "Failed to unregister token on logout: ${e.message}")
         }
     }
 

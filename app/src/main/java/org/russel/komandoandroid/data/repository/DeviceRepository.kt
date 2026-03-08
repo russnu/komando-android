@@ -20,4 +20,15 @@ class DeviceRepository(private val api: DeviceApi) {
             Result.failure(Exception("Failed to register device"))
         }
     }
+
+    suspend fun unregisterToken(token: String): Result<String> {
+        val request = FcmTokenRequest(token)
+        val response = api.unregisterDevice(request)  // call DELETE /devices/unregister
+
+        return if (response.isSuccessful) {
+            Result.success("Device unregistered")
+        } else {
+            Result.failure(Exception("Failed to unregister device"))
+        }
+    }
 }
