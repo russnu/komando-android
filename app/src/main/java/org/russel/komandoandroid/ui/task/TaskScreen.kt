@@ -2,7 +2,6 @@ package org.russel.komandoandroid.ui.task
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,6 +14,7 @@ import androidx.compose.ui.unit.dp
 fun TaskScreen(viewModel: TaskViewModel,  modifier: Modifier = Modifier, onTaskClick: (Int) -> Unit) {
 
     val tasks by viewModel.tasks.collectAsState()
+    val currentUserId by viewModel.currentUserId.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchTasksByUser()
@@ -28,7 +28,8 @@ fun TaskScreen(viewModel: TaskViewModel,  modifier: Modifier = Modifier, onTaskC
             TaskList(
                 tasks = tasks,
                 onTaskClick = onTaskClick,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                currentUserId = currentUserId
             )
         }
 

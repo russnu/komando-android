@@ -44,6 +44,7 @@ fun GroupDetailsScreen(
     val group by viewModel.selectedGroup.collectAsState()
     val tasks by viewModel.tasks.collectAsState()
     val members by viewModel.members.collectAsState()
+    val currentUserId by viewModel.currentUserId.collectAsState()
 
     LaunchedEffect(groupId) {
         viewModel.fetchGroupById(groupId)
@@ -110,7 +111,8 @@ fun GroupDetailsScreen(
                             TaskList(
                                 tasks = tasks,
                                 modifier = Modifier.fillMaxWidth(),
-                                onTaskClick = onTaskClick
+                                onTaskClick = onTaskClick,
+                                currentUserId = currentUserId
                             )
                         }
 

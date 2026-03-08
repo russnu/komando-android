@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import org.russel.komandoandroid.data.model.Task
 
 @Composable
-fun TaskList(tasks: List<Task>, modifier: Modifier = Modifier, onTaskClick: (Int) -> Unit  ) {
+fun TaskList(tasks: List<Task>, currentUserId: Int?, modifier: Modifier = Modifier, onTaskClick: (Int) -> Unit  ) {
     if (tasks.isEmpty()) {
         Text(
             text = "No tasks available",
@@ -23,7 +23,8 @@ fun TaskList(tasks: List<Task>, modifier: Modifier = Modifier, onTaskClick: (Int
             tasks.forEach { task ->
                 TaskItem(
                     task = task,
-                    onClick = { task.id?.let(onTaskClick) }
+                    onClick = { task.id?.let(onTaskClick) },
+                    currentUserId = currentUserId,
                 )
             }
         }
