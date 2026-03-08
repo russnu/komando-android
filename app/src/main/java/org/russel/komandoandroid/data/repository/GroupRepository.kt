@@ -1,6 +1,7 @@
 package org.russel.komandoandroid.data.repository
 
 import org.russel.komandoandroid.data.model.Group
+import org.russel.komandoandroid.data.model.request.CreateGroupRequest
 import org.russel.komandoandroid.data.remote.GroupApi
 
 class GroupRepository(private val api: GroupApi) {
@@ -17,8 +18,8 @@ class GroupRepository(private val api: GroupApi) {
         return api.getGroupById(id)
     }
     //--------------------------------------------------------------------------------------//
-    suspend fun addGroup(task: Group): Group {
-        return api.createGroup(task)
+    suspend fun addGroup(request: CreateGroupRequest): Group {
+        return api.createGroup(request)
     }
     //--------------------------------------------------------------------------------------//
     suspend fun updateGroup(task: Group): Group {

@@ -32,6 +32,7 @@ import org.russel.komandoandroid.ui.task.TaskList
 import org.russel.komandoandroid.R
 import org.russel.komandoandroid.ui.component.AppFloatingActionButton
 import org.russel.komandoandroid.ui.user.UserList
+import org.russel.komandoandroid.ui.viewmodel.GroupViewModel
 
 @Composable
 fun GroupDetailsScreen(

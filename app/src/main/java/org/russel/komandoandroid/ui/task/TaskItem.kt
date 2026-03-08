@@ -91,11 +91,6 @@ fun TaskItem(task: Task, currentUserId: Int?, onClick: () -> Unit) {
                 Spacer(modifier = Modifier.weight(1f))
                 CreatorBadge(text = creatorDisplayName, isCurrentUser = isCreator)
             }
-
-//            task.group.?.let {
-//                Spacer(modifier = Modifier.height(10.dp))
-//                GroupLabel(groupName = it)
-//            }
         }
 
     }

@@ -1,16 +1,15 @@
-package org.russel.komandoandroid.ui.task
+package org.russel.komandoandroid.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.russel.komandoandroid.data.auth.SessionManager
 import org.russel.komandoandroid.data.model.Task
-import org.russel.komandoandroid.data.model.enums.TaskStatus
 import org.russel.komandoandroid.data.model.User
+import org.russel.komandoandroid.data.model.enums.TaskStatus
 import org.russel.komandoandroid.data.model.request.CreateTaskRequest
 import org.russel.komandoandroid.data.model.request.GroupRef
 import org.russel.komandoandroid.data.model.request.UpdateTaskRequest
@@ -27,7 +26,6 @@ class TaskViewModel(private val repository: TaskRepository,
     private val _assignedUsers = MutableStateFlow<List<User>>(emptyList())
     private val _currentUserId = MutableStateFlow(sessionManager.getUserId())
     private val _users = MutableStateFlow<List<User>>(emptyList())
-
     private val _originalAssignedUsers = MutableStateFlow<List<User>>(emptyList())
     //--------------------------------------------------------------------------------------//
     val tasks: StateFlow<List<Task>> get() = _tasks

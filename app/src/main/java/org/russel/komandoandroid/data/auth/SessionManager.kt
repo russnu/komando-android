@@ -1,6 +1,8 @@
 package org.russel.komandoandroid.data.auth
 
 import android.content.Context
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
 
 /**
@@ -13,7 +15,12 @@ import org.json.JSONArray
 class SessionManager(context: Context) {
     private val prefs = context.getSharedPreferences("app_session", Context.MODE_PRIVATE)
 
-    //    Saves user credentials after successful login.
+    private val _userId = MutableStateFlow(getUserId())
+    val userIdFlow: StateFlow<Int?> = _userId
+    private val _isLoggedIn = MutableStateFlow(isLoggedIn())
+    val isLoggedInFlow: StateFlow<Boolean> = _isLoggedIn
+
+    // Saves user credentials after successful login.
     fun saveCredentials(userId: Int, fullname: String, username: String, password: String) {
         prefs.edit()
             .putInt("userId", userId)
@@ -21,9 +28,11 @@ class SessionManager(context: Context) {
             .putString("username", username)
             .putString("password", password)
             .apply()
+        _userId.value = userId
+        _isLoggedIn.value = true
     }
 
-    //    Clears all stored session data
+    // Clears all stored session data
     fun getUserId(): Int? {
         val id = prefs.getInt("userId", -1)
         return if (id != -1) id else null
@@ -33,7 +42,10 @@ class SessionManager(context: Context) {
     fun getPassword(): String? = prefs.getString("password", null)
     fun clearSession() {
         prefs.edit().clear().apply()
+        _userId.value = null
+        _isLoggedIn.value = false
     }
+
     fun isLoggedIn(): Boolean = !getUsername().isNullOrEmpty() && !getPassword().isNullOrEmpty()
 
     // User Groups ========================================================================== //
@@ -47,7 +59,7 @@ class SessionManager(context: Context) {
         prefs.edit().putString("userGroups", json).apply()
     }
 
-    //    Returns stored group IDs
+    // Returns stored group IDs
     fun getUserGroups(): List<Int> {
         val json = prefs.getString("userGroups", "[]") ?: "[]"
         val jsonArray = JSONArray(json)

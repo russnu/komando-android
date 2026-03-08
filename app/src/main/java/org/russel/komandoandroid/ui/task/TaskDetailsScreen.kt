@@ -39,6 +39,7 @@ import org.russel.komandoandroid.ui.component.AppFloatingActionButton
 import org.russel.komandoandroid.ui.component.AppOutlinedButton
 import org.russel.komandoandroid.ui.component.ConfirmDeleteDialog
 import org.russel.komandoandroid.ui.component.CreatorBadge
+import org.russel.komandoandroid.ui.viewmodel.TaskViewModel
 
 @Composable
 fun TaskDetailsScreen(

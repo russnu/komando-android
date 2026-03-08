@@ -15,7 +15,8 @@ import androidx.compose.ui.unit.dp
 import org.russel.komandoandroid.ui.component.AppButton
 import org.russel.komandoandroid.ui.component.AppOutlinedButton
 import org.russel.komandoandroid.ui.component.UserSelector
-import org.russel.komandoandroid.ui.group.GroupViewModel
+import org.russel.komandoandroid.ui.viewmodel.GroupViewModel
+import org.russel.komandoandroid.ui.viewmodel.TaskViewModel
 
 @Composable
 fun UpdateAssignedUsersScreen(

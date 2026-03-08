@@ -17,16 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.russel.komandoandroid.ui.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel,
-    modifier: Modifier = Modifier,
-    onLogout: () -> Unit
+    viewModel: AuthViewModel,
+    modifier: Modifier = Modifier
 ) {
-    val fullName = viewModel.name
-    val username = viewModel.username
+    val fullName = viewModel.fullName.value ?: "Unknown"
+    val username = viewModel.username.value ?: "Unknown"
 
     Column(
         modifier = modifier
@@ -54,7 +54,6 @@ fun ProfileScreen(
         Button(
             onClick = {
                 viewModel.logout()
-                onLogout()
             },
             modifier = Modifier.fillMaxWidth(0.5f)
         ) {

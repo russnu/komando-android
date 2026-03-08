@@ -3,6 +3,7 @@ package org.russel.komandoandroid.ui.component
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,9 @@ fun AppPasswordField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text("Password") },
+        label = { Text(text = "Password", style = MaterialTheme.typography.labelLarge.copy(
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )) },
         singleLine = true,
         visualTransformation = if (passwordVisible)
             VisualTransformation.None

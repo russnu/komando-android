@@ -16,13 +16,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import org.russel.komandoandroid.R
 import org.russel.komandoandroid.ui.component.AppFloatingActionButton
+import org.russel.komandoandroid.ui.viewmodel.GroupViewModel
 
 @Composable
-fun GroupScreen(viewModel: GroupViewModel,  modifier: Modifier = Modifier, onGroupClick: (Int) -> Unit,  onAddGroupClick: () -> Unit) {
+fun GroupScreen(viewModel: GroupViewModel, modifier: Modifier = Modifier, onGroupClick: (Int) -> Unit, onAddGroupClick: () -> Unit) {
     val groups by viewModel.groups.collectAsState()
     val currentUserId by viewModel.currentUserId.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(currentUserId) {
         viewModel.fetchGroupsByUser()
     }
 

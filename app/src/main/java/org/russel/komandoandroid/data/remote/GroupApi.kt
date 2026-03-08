@@ -2,6 +2,7 @@ package org.russel.komandoandroid.data.remote
 
 import org.russel.komandoandroid.data.model.Group
 import org.russel.komandoandroid.data.model.Task
+import org.russel.komandoandroid.data.model.request.CreateGroupRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -21,7 +22,7 @@ interface GroupApi {
     suspend fun getGroupById(@Path("id") id: Int): Group
 
     @POST("/api/group")
-    suspend fun createGroup(@Body group: Group): Group
+    suspend fun createGroup(@Body request: CreateGroupRequest): Group
 
     @PUT("/api/group/{id}")
     suspend fun updateGroup(@Path("id") id: Int?, @Body group: Group): Group

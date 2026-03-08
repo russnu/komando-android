@@ -13,7 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.dp
-import org.russel.komandoandroid.ui.group.GroupViewModel
+import org.russel.komandoandroid.ui.viewmodel.GroupViewModel
+import org.russel.komandoandroid.ui.viewmodel.TaskViewModel
 
 @Composable
 fun CreateTaskScreen(

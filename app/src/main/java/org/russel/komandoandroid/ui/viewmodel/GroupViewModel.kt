@@ -1,4 +1,4 @@
-package org.russel.komandoandroid.ui.group
+package org.russel.komandoandroid.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -10,22 +10,26 @@ import org.russel.komandoandroid.data.auth.SessionManager
 import org.russel.komandoandroid.data.model.Group
 import org.russel.komandoandroid.data.model.Task
 import org.russel.komandoandroid.data.model.User
+import org.russel.komandoandroid.data.model.request.CreateGroupRequest
+import org.russel.komandoandroid.data.model.request.UserRef
 import org.russel.komandoandroid.data.repository.GroupRepository
 
 class GroupViewModel(private val repository: GroupRepository,
-                     private val sessionManager: SessionManager) : ViewModel() {
+                     private val sessionManager: SessionManager
+) : ViewModel() {
     private val _groups = MutableStateFlow<List<Group>>(emptyList())
     private val _selectedGroup = MutableStateFlow<Group?>(null)
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
     private val _members = MutableStateFlow<List<User>>(emptyList())
-    private val _currentUserId = MutableStateFlow(sessionManager.getUserId())
-
+//    private val _currentUserId = MutableStateFlow(sessionManager.getUserId())
+    private val _addedMembers = MutableStateFlow<Set<User>>(emptySet())
     //--------------------------------------------------------------------------------------//
     val groups: StateFlow<List<Group>> get() = _groups
     val selectedGroup: StateFlow<Group?> = _selectedGroup
     val tasks: StateFlow<List<Task>> get() = _tasks
     val members: StateFlow<List<User>> get() = _members
-    val currentUserId: StateFlow<Int?> = _currentUserId
+    val currentUserId: StateFlow<Int?> = sessionManager.userIdFlow
+    val addedMembers: StateFlow<Set<User>> get() = _addedMembers
     //--------------------------------------------------------------------------------------//
 
     fun fetchGroups() {
@@ -80,7 +84,7 @@ class GroupViewModel(private val repository: GroupRepository,
 
     //--------------------------------------------------------------------------------------//
 
-    fun fetchGroupIds(): List<Int> {
+    fun getUserGroupIds(): List<Int> {
         return _groups.value.mapNotNull { it.id }
     }
 
@@ -118,19 +122,23 @@ class GroupViewModel(private val repository: GroupRepository,
     }
 
 //    //--------------------------------------------------------------------------------------//
-//    fun addGroup(name: String) {
-//        viewModelScope.launch {
-//            try {
-//                val newGroup = Group( name = name)
-//
-//                val createdGroup = repository.addGroup(newGroup)
-//
-//                _groups.value += createdGroup
-//            } catch (e: Exception) {
-//                Log.e("GroupVM", "Failed to create group.", e)
-//            }
-//        }
-//    }
+    fun addGroup(name: String) {
+        viewModelScope.launch {
+            try {
+                val request = CreateGroupRequest(
+                    name = name,
+                    users = addedMembers.value.map { user ->
+                        UserRef(user.id)
+                    })
+
+                val createdGroup = repository.addGroup(request)
+
+                _groups.value += createdGroup
+            } catch (e: Exception) {
+                Log.e("GroupVM", "Failed to create group.", e)
+            }
+        }
+    }
 //    //--------------------------------------------------------------------------------------//
 //    fun updateGroup(group: Group) {
 //        viewModelScope.launch {
@@ -166,4 +174,17 @@ class GroupViewModel(private val repository: GroupRepository,
 //            }
 //        }
 //    }
+
+    //--------------------------------------------------------------------------------------//
+    fun toggleAddedUsers(user: User) {
+        _addedMembers.value = if (_addedMembers.value.contains(user)) {
+            _addedMembers.value - user
+        } else {
+            _addedMembers.value + user
+        }
+    }
+    //--------------------------------------------------------------------------------------//
+    fun clearAddedMembers() {
+        _addedMembers.value = emptySet()
+    }
 }

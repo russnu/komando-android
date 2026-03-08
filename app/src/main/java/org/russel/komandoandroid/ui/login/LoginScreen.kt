@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import org.russel.komandoandroid.data.auth.AuthState
+import org.russel.komandoandroid.ui.viewmodel.AuthViewModel
 import org.russel.komandoandroid.ui.component.AppPasswordField
 import org.russel.komandoandroid.ui.component.AppButton
 import org.russel.komandoandroid.ui.component.AppTextField
@@ -28,64 +30,59 @@ import org.russel.komandoandroid.ui.component.AppTextField
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel,
+    viewModel: AuthViewModel,
     modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit = {}
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+//    val uiState by viewModel.uiState.collectAsState()
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    LaunchedEffect(uiState.isSuccess) {
-        if (uiState.isSuccess) {
+    val authState by viewModel.authState.collectAsState()
+
+    LaunchedEffect(authState) {
+        if (authState == AuthState.LoggedIn) {
             onLoginSuccess()
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Login") })
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
 
-            AppTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = "Email"
-            )
+        AppTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = "User Name"
+        )
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            AppPasswordField(
-                value = password,
-                onValueChange = { password = it }
-            )
+        AppPasswordField(
+            value = password,
+            onValueChange = { password = it }
+        )
 
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            AppButton(
-                text = if (uiState.isLoading) "Logging in..." else "Login",
-                onClick = {
-                    viewModel.login(username, password)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            TextButton(
-                onClick = onRegisterClick,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("Don't have an account? Register")
+        AppButton(
+            text = if (authState == AuthState.Loading) "Logging in..." else "Login",
+            onClick = {
+                viewModel.login(username, password)
             }
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TextButton(
+            onClick = onRegisterClick,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Don't have an account? Register")
         }
     }
 }
