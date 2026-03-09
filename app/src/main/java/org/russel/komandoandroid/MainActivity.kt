@@ -100,15 +100,9 @@ class MainActivity : ComponentActivity() {
                 val taskViewModel: TaskViewModel = viewModel(
                     factory = TaskViewModelFactory(taskRepository, userRepository, sessionManager)
                 )
-//                val profileViewModel: ProfileViewModel = viewModel(
-//                    factory = ProfileViewModelFactory(sessionManager)
-//                )
                 val groupViewModel: GroupViewModel = viewModel(
                     factory = GroupViewModelFactory(groupRepository, sessionManager)
                 )
-//                val loginViewModel: LoginViewModel = viewModel(
-//                    factory = LoginViewModelFactory(authRepository, deviceRepository, groupViewModel , sessionManager)
-//                )
                 val userViewModel: UserViewModel = viewModel(
                     factory = UserViewModelFactory(userRepository, sessionManager)
                 )

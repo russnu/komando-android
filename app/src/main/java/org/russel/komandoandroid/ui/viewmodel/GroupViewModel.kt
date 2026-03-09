@@ -14,6 +14,7 @@ import org.russel.komandoandroid.data.model.request.CreateGroupRequest
 import org.russel.komandoandroid.data.model.request.UpdateGroupRequest
 import org.russel.komandoandroid.data.model.request.UserRef
 import org.russel.komandoandroid.data.repository.GroupRepository
+import org.russel.komandoandroid.fcmservice.FcmTopicManager
 
 class GroupViewModel(private val repository: GroupRepository,
                      private val sessionManager: SessionManager
@@ -46,22 +47,23 @@ class GroupViewModel(private val repository: GroupRepository,
 
     //--------------------------------------------------------------------------------------//
 
-    fun fetchGroupsByUser() {
-        if (!sessionManager.isLoggedIn()) return
-        val userId = sessionManager.getUserId() ?: return
+    suspend fun fetchGroupsByUser(): List<Group> {
+        if (!sessionManager.isLoggedIn()) return emptyList()
+        val userId = sessionManager.getUserId() ?: return emptyList()
 
-        viewModelScope.launch {
-            try {
-                val response = repository.getGroupsByUser(userId)
-                _groups.value = response
+        return try {
+            val response = repository.getGroupsByUser(userId)
+            _groups.value = response
 
-                // Save the group IDs for FCM topic subscriptions
-                val groupIds = response.mapNotNull { it.id }
-                sessionManager.saveUserGroups(groupIds)
+            // Save the group IDs for FCM topic subscriptions
+            val groupIds = response.mapNotNull { it.id }
+            sessionManager.saveUserGroups(groupIds)
 
-            } catch (e: Exception) {
-                Log.e("GroupVM", "Failed to fetch groups of user.", e)
-            }
+            response
+
+        } catch (e: Exception) {
+            Log.e("GroupVM", "Failed to fetch groups of user.", e)
+            emptyList()
         }
     }
 
@@ -145,6 +147,13 @@ class GroupViewModel(private val repository: GroupRepository,
                     repository.removeMembers(groupId, removedIds.toList())
                 }
 
+                // Unsubscribe current user from group if removed
+                currentUserId.value?.let { userId ->
+                    if (userId in removedIds) {
+                        FcmTopicManager.unsubscribeFromGroup(groupId.toString())
+                    }
+                }
+
                 _originalMembers.value = _addedMembers.value
 
             } catch (e: Exception) {
@@ -177,4 +186,5 @@ class GroupViewModel(private val repository: GroupRepository,
     fun clearAddedMembers() {
         _addedMembers.value = emptySet()
     }
+
 }

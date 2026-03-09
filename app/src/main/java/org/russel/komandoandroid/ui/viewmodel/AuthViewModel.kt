@@ -66,20 +66,28 @@ class AuthViewModel(
             val result = repository.login(username, password)
 
             result.onSuccess {
-                // Register FCM token after login
+//               // Register FCM token after login
+//                registerDevice()
+//
+//               // Fetch groups for this user
+//                val groupIds = groupViewModel.getUserGroupIds()
+//
+//               // Subscribe to each group's FCM topic
+//               FcmTopicManager.subscribeToGroups(groupIds)
+
+                // 1️⃣ Register device token
                 registerDevice()
 
-                // Fetch groups for this user
-                val groupIds = groupViewModel.getUserGroupIds()
+                // 2️⃣ Fetch groups from backend
+                val groups = groupViewModel.fetchGroupsByUser()
 
-                // Subscribe to each group's FCM topic
-                FcmTopicManager.subscribeToGroups(groupIds)
-//                groupIds.forEach { groupId ->
-//                    FcmTopicManager.getInstance()
-//                        .subscribeToGroup(groupId.toString())
-//                }
+                // 3️⃣ Wait for fetch to complete (or observe stateFlow)
+                val groupIds = groups.mapNotNull { it.id }
 
-//                val groupIds = groupViewModel.fetchGroupsByUser()
+                // 4️⃣ Sync FCM topics with server groups
+                FcmTopicManager.syncSubscriptions(sessionManager, groupIds)
+
+
                 _isLoading.value = false
                 refreshAuthState()
             }

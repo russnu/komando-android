@@ -87,4 +87,16 @@ object FcmTopicManager {
         subscribeToGroups(groupIds)
     }
 
+    fun syncSubscriptions(sessionManager: SessionManager, serverGroupIds: List<Int>) {
+        val localGroupIds = sessionManager.getUserGroups()
+
+        val removedGroups = localGroupIds - serverGroupIds.toSet()
+        val addedGroups = serverGroupIds - localGroupIds.toSet()
+
+        removedGroups.forEach { unsubscribeFromGroup(it.toString()) }
+        addedGroups.forEach { subscribeToGroup(it.toString()) }
+
+        sessionManager.saveUserGroups(serverGroupIds)
+    }
+
 }

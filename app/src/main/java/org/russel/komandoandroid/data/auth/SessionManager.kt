@@ -59,7 +59,7 @@ class SessionManager(context: Context) {
         prefs.edit().putString("userGroups", json).apply()
     }
 
-    // Returns stored group IDs
+    /** Returns stored group IDs */
     fun getUserGroups(): List<Int> {
         val json = prefs.getString("userGroups", "[]") ?: "[]"
         val jsonArray = JSONArray(json)
